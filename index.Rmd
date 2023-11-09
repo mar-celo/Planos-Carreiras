@@ -315,7 +315,9 @@ Column
     
 ```{r}
 
-hcboxplot(name="Remuneração", x = carreiras$Remuneracao, var = carreiras$Agrupamento, color = "#400d65")%>%
+carreiras1 <- carreiras |> filter( !is.na(Agrupamento), Agrupamento != "N.a.")
+
+hcboxplot(name="Remuneração", x = carreiras1$Remuneracao, var = carreiras1$Agrupamento, color = "#400d65")%>%
   hc_title(text = "Distribuição da Remuneração por Faixa Etária", align = "left", style = list(color = "#bbbbbb"))%>% hc_yAxis(title = list(text = "Remuneração Bruta - R$")) |> 
    hc_exporting(enabled = TRUE)
 

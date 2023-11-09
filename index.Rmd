@@ -1,0 +1,390 @@
+---
+title: "Painel do Perfil dos Servidores Ativos"
+output: 
+  flexdashboard::flex_dashboard:
+    storyboard: true
+    orientation: columns
+    source_code: embed
+    vertical_layout: fill
+    theme: yeti
+---
+
+
+
+```{r setup, include=FALSE}
+
+
+# PACKAGES / LIBRARIES:
+
+library(flexdashboard)
+library(tidyverse)
+library(plotly)
+library(leaflet)
+library(rnaturalearth)
+library(treemap)
+library(treemapify)
+library(d3treeR)
+library(highcharter)
+library(readxl)
+library(stringr)
+library(knitr)
+library(DT)
+library(viridisLite)
+
+options(scipen=10000)
+
+```
+
+Servidores Ativos
+===========================================================================
+
+
+```{r base}
+carreiras <- readRDS("data/tab.rds")
+
+```
+
+```{r}
+treemap1 <- carreiras |> 
+  group_by(Agrupamento) |> 
+  summarise(
+    qtde_servidores = n(),
+    Remun_media = round(mean(Remuneracao),2), 
+     max = round(max(Remuneracao),2)
+  ) 
+```
+
+Column {data-width=200}
+--------------------------------------------------------------------
+
+### **Treemap Plano de Carreiras e Remuneração**
+
+\
+
+A ilustração adjacente exibe a relação entre o tamanho de cada retângulo e o número total de servidores, em que as dimensões dos retângulos são proporcionais à quantidade de servidores em cada categoria. Além disso, as cores utilizadas nos retângulos são indicativas da média de remuneração dos servidores ativos em cada grupo. Ou seja, a cor de cada retângulo representa a remuneração média associada aos servidores daquela categoria, enquanto o tamanho relativo dos retângulos expressa a proporção de servidores em relação ao total, permitindo uma análise visual da distribuição de servidores e suas remunerações.
+
+\
+
+
+Column 
+---------------------------------------------------------------------------
+
+### Distribuição da total dos Servidores Ativos por Carreira e Remuneração Média
+
+```{r }
+library(highcharter) #interactive visualization
+treemap1  |> 
+  hchart('treemap', hcaes(x = "Agrupamento",  value = 'qtde_servidores', color = 'Remun_media'), allowDrillToNode = TRUE) |> hc_exporting(enabled = TRUE) |> hc_title(text = "Plano de Carreiras e Remuneração Média")
+```
+
+Planos e Carreiras
+===========================================================================
+
+Column {data-width=200}
+--------------------------------------------------------------------
+
+### **Treemap Plano de Carreiras e Remuneração**
+
+\
+
+A ilustração adjacente exibe apenas a proporção entre o tamanho de cada retângulo e o número total de servidores.
+
+Cada cor representa o agrupamento dos Planos de Carreiras. Passe o mouse para visualizar o nome do agrupamento.
+
+\
+
+Column 
+---------------------------------------------------------------------------
+
+### Distribuição das carreiras e planos
+
+```{r}
+
+treemap0 <- carreiras |> 
+  group_by(Agrupamento, VAR_0185_AGRUPAMENTO, VAR_0183_CARREIRA) |> 
+  summarise(
+    qtde_servidores = n(),
+    Remun_media = round(mean(Remuneracao),2), 
+     max = round(max(Remuneracao),2)
+  ) 
+
+dout <- data_to_hierarchical(
+  treemap0, 
+  c( Agrupamento, VAR_0185_AGRUPAMENTO, VAR_0183_CARREIRA), 
+  qtde_servidores)
+
+hchart(dout, type = "sunburst") |>  hc_exporting(enabled = TRUE) 
+
+# hchart(dout, type = "treemap", allowDrillToNode = TRUE) |> hc_exporting(enabled = TRUE) |> hc_title(text = "")
+```
+
+Column 
+---------------------------------------------------------------------------
+
+### Distribuição da total dos Servidores Ativos por Carreira e Remuneração Média
+
+```{r}
+
+treemap2 <- carreiras |> 
+  group_by(Agrupamento, VAR_0185_AGRUPAMENTO) |> 
+  summarise(
+    qtde_servidores = n(),
+    Remun_media = round(mean(Remuneracao),2), 
+     max = round(max(Remuneracao),2)
+  ) 
+
+dout <- data_to_hierarchical(
+  treemap2, 
+  c( Agrupamento, VAR_0185_AGRUPAMENTO),
+  size_var =   qtde_servidores)
+
+#hchart(dout, type = "sunburst") |>  hc_exporting(enabled = TRUE) 
+
+ hchart(dout, type = "treemap", allowDrillToNode = TRUE) |> hc_exporting(enabled = TRUE) |> hc_title(text = "") 
+  
+ 
+```
+
+Faixa Remunenatória e Raça
+====================================================================================
+
+Column
+---------------------------------------------------------------------------
+
+### Distribuição dos Planos de Carreiras por Faixa Remuneratória
+
+```{r}
+
+treemap3 <- carreiras |> 
+  group_by(Agrupamento, No_faixa) |> 
+  summarise(
+    qtde_servidores = n(),
+    Remun_media = round(mean(Remuneracao),2)
+  ) |> dplyr::ungroup() 
+
+dout <- data_to_hierarchical(
+  treemap3, 
+  c( Agrupamento, No_faixa ), 
+  qtde_servidores)
+
+#hchart(dout, type = "sunburst")
+
+hchart(dout, type = "treemap", allowDrillToNode = TRUE) |> hc_exporting(enabled = TRUE) |> hc_title(text = "Plano de Carreiras por Faixa Remuneratória")
+```
+
+Column
+---------------------------------------------------------------------------
+
+### Distribuição dos Planos de Carreiras por Raça-Etnia
+
+```{r}
+
+treemap3 <- carreiras |> 
+  group_by(Agrupamento, Raça_cor) |> 
+  summarise(
+    qtde_servidores = n(),
+    Remun_media = round(mean(Remuneracao),2)
+  ) |> dplyr::ungroup() 
+
+dout <- data_to_hierarchical(
+  treemap3, 
+  c( Agrupamento, Raça_cor ), 
+  qtde_servidores)
+
+#hchart(dout, type = "sunburst")
+
+hchart(dout, type = "treemap", allowDrillToNode = TRUE) |> hc_exporting(enabled = TRUE) |> hc_title(text = "Plano de Carreiras por Raça-Etnia")
+```
+
+Por Gênero
+====================================================================================
+
+Column
+---------------------------------------------------------------------------
+
+### Distribuição dos Planos de Carreiras por Gênero Feminino
+
+```{r}
+
+treemap5 <- carreiras |> filter(CO_SEXO == "F") |> 
+  group_by(VAR_0185_AGRUPAMENTO, CO_SEXO) |> 
+  summarise(
+    qtde_servidores = n(),
+    Remun_media = round(mean(Remuneracao),2)
+  ) |> dplyr::ungroup() |> 
+  filter(!is.na(VAR_0185_AGRUPAMENTO))
+
+dout <- data_to_hierarchical(
+  treemap5, 
+  c(  CO_SEXO , VAR_0185_AGRUPAMENTO ), 
+  qtde_servidores)
+
+
+hchart(dout, type = "treemap", allowDrillToNode = TRUE) |>
+  hc_exporting(enabled = TRUE) |> hc_title(text = "Plano de Carreiras por Sexo Feminino")
+```
+
+Column
+---------------------------------------------------------------------------
+
+### Distribuição dos Planos de Carreiras por Gênero Masculino
+
+```{r}
+
+treemap6 <- carreiras |> filter(CO_SEXO == "M") |> 
+  group_by(VAR_0185_AGRUPAMENTO, CO_SEXO) |> 
+  summarise(
+    qtde_servidores = n(),
+    Remun_media = round(mean(Remuneracao),2)
+  ) |> dplyr::ungroup() |> 
+  filter(!is.na(VAR_0185_AGRUPAMENTO))
+
+dout <- data_to_hierarchical(
+  treemap6, 
+  c(  CO_SEXO , VAR_0185_AGRUPAMENTO ), 
+  qtde_servidores)
+
+
+
+hchart(dout, type = "treemap", allowDrillToNode = TRUE) |>
+  hc_exporting(enabled = TRUE) |> hc_title(text = "Plano de Carreiras por Sexo Masculino") 
+```
+
+Faixa etária e Escolaridade
+====================================================================================
+
+Column
+---------------------------------------------------------------------------
+
+### Distribuição dos Planos de Carreiras por Faixa Etária
+
+```{r}
+
+treemap3 <- carreiras |> 
+  group_by(Agrupamento, faixa_etaria) |> 
+  summarise(
+    qtde_servidores = n(),
+    Remun_media = round(mean(Remuneracao),2)
+  ) |> dplyr::ungroup() 
+
+dout <- data_to_hierarchical(
+  treemap3, 
+  c( Agrupamento,faixa_etaria ), 
+  qtde_servidores)
+
+#hchart(dout, type = "sunburst")
+
+hchart(dout, type = "treemap", allowDrillToNode = TRUE) |> hc_exporting(enabled = TRUE) |> hc_title(text = "Plano de Carreiras por Faixa Etária")
+```
+
+Column
+---------------------------------------------------------------------------
+
+### Distribuição dos Planos de Carreiras por Nível de Escolaridade
+
+```{r}
+
+treemap3 <- carreiras |> 
+  group_by(VAR_0185_AGRUPAMENTO, SG_ESCOLARIDADE) |> 
+  summarise(
+    qtde_servidores = n(),
+    Remun_media = round(mean(Remuneracao),2) )|> 
+      dplyr::ungroup() |> 
+   filter(!is.na(VAR_0185_AGRUPAMENTO))
+
+dout <- data_to_hierarchical(
+  treemap3, 
+  c( SG_ESCOLARIDADE, VAR_0185_AGRUPAMENTO ), 
+  qtde_servidores)
+
+#hchart(dout, type = "sunburst")
+
+hchart(dout, type = "treemap", allowDrillToNode = TRUE) |> hc_exporting(enabled = TRUE) |> hc_title(text = "Plano de Carreiras por Nível de Escolaridade")
+
+```
+
+Remuneração por grupos {data-width=500}
+==============================
+
+Column
+------------------------------
+    
+### Box plot - Remuneração por Faixa Etária
+    
+```{r}
+
+hcboxplot(name="Remuneração", x = carreiras$Remuneracao, var = carreiras$faixa_etaria, color = "#400d65")%>%
+  hc_title(text = "Distribuição da Remuneração por Faixa Etária", align = "left", style = list(color = "#bbbbbb"))%>% hc_yAxis(title = list(text = "Remuneração Bruta - R$")) |> 
+   hc_exporting(enabled = TRUE)
+
+```
+   
+Column {data-width=500}
+-------------------------------------
+   
+### Box plot - Remuneração por Nível de Escolaridade
+
+```{r}
+df <- carreiras |> dplyr::filter(!is.na(SG_ESCOLARIDADE))
+hcboxplot(name="Remuneração", x = df$Remuneracao, var = df$SG_ESCOLARIDADE, color = "#400d65")%>%
+  hc_title(text = "Distribuição da Remuneração por Nível de Escolaridade", align = "left", style = list(color = "#bbbbbb"))%>% hc_yAxis(title = list(text = "Remuneração Bruta - R$"))|> hc_exporting(enabled = TRUE)
+
+```   
+
+Column
+------------------------------
+    
+### Box plot - Remuneração por Agrupamento
+    
+```{r}
+
+hcboxplot(name="Remuneração", x = carreiras$Remuneracao, var = carreiras$Agrupamento, color = "#400d65")%>%
+  hc_title(text = "Distribuição da Remuneração por Faixa Etária", align = "left", style = list(color = "#bbbbbb"))%>% hc_yAxis(title = list(text = "Remuneração Bruta - R$")) |> 
+   hc_exporting(enabled = TRUE)
+
+```
+
+
+Ranking
+====================================================================================
+  
+
+```{r}
+library(ggplot2)
+library(ggiraph)
+library(patchwork)
+
+treemap8 <- carreiras |> 
+  group_by(Agrupamento) |> 
+  summarise(
+    qtde_servidores = n(),
+    Remun_media = round(mean(Remuneracao),2) )|> 
+      dplyr::ungroup() |> arrange(-qtde_servidores) |> 
+  dplyr::filter(!is.na(Agrupamento)| !is.na(Agrupamento))
+
+
+p1 <- ggplot(treemap8, 
+       aes(y = reorder(Agrupamento, qtde_servidores), 
+           x=qtde_servidores,
+           tooltip = qtde_servidores,
+           data_id = Agrupamento)) +
+  geom_bar_interactive(stat="identity", 
+                       fill="steelblue") +
+  labs(y="", x="Ranking Total de Servidores") + 
+  theme_minimal()
+
+p2 <- ggplot(treemap8, 
+             aes(y = reorder(Agrupamento, Remun_media), 
+                 x=Remun_media,
+                 tooltip = Remun_media,
+                 data_id = Agrupamento)) +
+  geom_bar_interactive(stat="identity", 
+                       fill="steelblue") +
+  labs(y="", x="Ranking Remuneração Média") + 
+  theme_minimal()
+
+p3 <- (p1 | p2) +
+  plot_annotation(title = "Total de servidores e remuneração média por agrupamento")
+p3
+```
+

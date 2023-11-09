@@ -93,30 +93,7 @@ Cada cor representa o agrupamento dos Planos de Carreiras. Passe o mouse para vi
 
 \
 
-Column 
----------------------------------------------------------------------------
 
-### Distribuição das carreiras e planos
-
-```{r}
-
-treemap0 <- carreiras |> 
-  group_by(Agrupamento, VAR_0185_AGRUPAMENTO, VAR_0183_CARREIRA) |> 
-  summarise(
-    qtde_servidores = n(),
-    Remun_media = round(mean(Remuneracao),2), 
-     max = round(max(Remuneracao),2)
-  ) 
-
-dout <- data_to_hierarchical(
-  treemap0, 
-  c( Agrupamento, VAR_0185_AGRUPAMENTO, VAR_0183_CARREIRA), 
-  qtde_servidores)
-
-hchart(dout, type = "sunburst") |>  hc_exporting(enabled = TRUE) 
-
-# hchart(dout, type = "treemap", allowDrillToNode = TRUE) |> hc_exporting(enabled = TRUE) |> hc_title(text = "")
-```
 
 Column 
 ---------------------------------------------------------------------------

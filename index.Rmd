@@ -73,8 +73,20 @@ Column
 
 ```{r }
 library(highcharter) #interactive visualization
-treemap1  |> 
-  hchart('treemap', hcaes(x = "Agrupamento",  value = 'qtde_servidores', color = 'Remun_media'), allowDrillToNode = TRUE) |> hc_exporting(enabled = TRUE) |> hc_title(text = "Plano de Carreiras e Remuneração Média")
+treemap1 |>
+  hchart('treemap',
+         hcaes(
+           x = "Agrupamento",
+           value = 'qtde_servidores',
+           color = 'Remun_media'
+         ),
+         allowDrillToNode = TRUE,
+         tooltip = list(
+           pointFormat = "Agrupamento: {point.name}<br>Quantidade de Servidores: {point.value}<br>Remuneração Média: R$ {point.colorValue}"
+         )
+  ) |>
+  hc_exporting(enabled = TRUE) |>
+  hc_title(text = "Plano de Carreiras e Remuneração Média")
 ```
 
 Planos e Carreiras
@@ -98,7 +110,7 @@ Cada cor representa o agrupamento dos Planos de Carreiras. Passe o mouse para vi
 Column 
 ---------------------------------------------------------------------------
 
-### Distribuição da total dos Servidores Ativos por Carreira e Remuneração Média
+### Distribuição da total dos Servidores Ativos por Carreira
 
 ```{r}
 
@@ -117,7 +129,13 @@ dout <- data_to_hierarchical(
 
 #hchart(dout, type = "sunburst") |>  hc_exporting(enabled = TRUE) 
 
- hchart(dout, type = "treemap", allowDrillToNode = TRUE) |> hc_exporting(enabled = TRUE) |> hc_title(text = "") 
+ hchart(dout, type = "treemap", allowDrillToNode = TRUE, 
+        tooltip = list(
+           pointFormat = "Agrupamento: {point.name}<br>Quantidade de Servidores: {point.value}"
+         )
+        ) |> 
+   hc_exporting(enabled = TRUE) |>
+   hc_title(text = "") 
   
  
 ```
@@ -146,7 +164,12 @@ dout <- data_to_hierarchical(
 
 #hchart(dout, type = "sunburst")
 
-hchart(dout, type = "treemap", allowDrillToNode = TRUE) |> hc_exporting(enabled = TRUE) |> hc_title(text = "Plano de Carreiras por Faixa Remuneratória")
+hchart(dout, type = "treemap", allowDrillToNode = TRUE, 
+        tooltip = list(
+           pointFormat = "Agrupamento: {point.name}<br>Quantidade de Servidores: {point.value}"
+         )
+       ) |> hc_exporting(enabled = TRUE) |>
+  hc_title(text = "Plano de Carreiras por Faixa Remuneratória")
 ```
 
 Column
@@ -170,7 +193,13 @@ dout <- data_to_hierarchical(
 
 #hchart(dout, type = "sunburst")
 
-hchart(dout, type = "treemap", allowDrillToNode = TRUE) |> hc_exporting(enabled = TRUE) |> hc_title(text = "Plano de Carreiras por Raça-Etnia")
+hchart(dout, type = "treemap", allowDrillToNode = TRUE, 
+        tooltip = list(
+           pointFormat = "Agrupamento: {point.name}<br>Quantidade de Servidores: {point.value}"
+         )
+       ) |>
+  hc_exporting(enabled = TRUE) |>
+  hc_title(text = "Plano de Carreiras por Raça-Etnia")
 ```
 
 Por Gênero
@@ -197,8 +226,13 @@ dout <- data_to_hierarchical(
   qtde_servidores)
 
 
-hchart(dout, type = "treemap", allowDrillToNode = TRUE) |>
-  hc_exporting(enabled = TRUE) |> hc_title(text = "Plano de Carreiras por Sexo Feminino")
+hchart(dout, type = "treemap", allowDrillToNode = TRUE, 
+        tooltip = list(
+           pointFormat = "Agrupamento: {point.name}<br>Quantidade de Servidores: {point.value}"
+         )
+       ) |>
+  hc_exporting(enabled = TRUE) |>
+  hc_title(text = "Plano de Carreiras por Sexo Feminino")
 ```
 
 Column
@@ -223,8 +257,13 @@ dout <- data_to_hierarchical(
 
 
 
-hchart(dout, type = "treemap", allowDrillToNode = TRUE) |>
-  hc_exporting(enabled = TRUE) |> hc_title(text = "Plano de Carreiras por Sexo Masculino") 
+hchart(dout, type = "treemap", allowDrillToNode = TRUE, 
+        tooltip = list(
+           pointFormat = "Agrupamento: {point.name}<br>Quantidade de Servidores: {point.value}"
+         )
+       ) |>
+  hc_exporting(enabled = TRUE) |> 
+  hc_title(text = "Plano de Carreiras por Sexo Masculino") 
 ```
 
 Faixa etária e Escolaridade
@@ -251,7 +290,12 @@ dout <- data_to_hierarchical(
 
 #hchart(dout, type = "sunburst")
 
-hchart(dout, type = "treemap", allowDrillToNode = TRUE) |> hc_exporting(enabled = TRUE) |> hc_title(text = "Plano de Carreiras por Faixa Etária")
+hchart(dout, type = "treemap", allowDrillToNode = TRUE, 
+        tooltip = list(
+           pointFormat = "Agrupamento: {point.name}<br>Quantidade de Servidores: {point.value}"
+         )
+       ) |> hc_exporting(enabled = TRUE) |>
+  hc_title(text = "Plano de Carreiras por Faixa Etária")
 ```
 
 Column
@@ -276,7 +320,12 @@ dout <- data_to_hierarchical(
 
 #hchart(dout, type = "sunburst")
 
-hchart(dout, type = "treemap", allowDrillToNode = TRUE) |> hc_exporting(enabled = TRUE) |> hc_title(text = "Plano de Carreiras por Nível de Escolaridade")
+hchart(dout, type = "treemap", allowDrillToNode = TRUE, 
+        tooltip = list(
+           pointFormat = "Agrupamento: {point.name}<br>Quantidade de Servidores: {point.value}"
+         )
+       ) |> hc_exporting(enabled = TRUE) |>
+  hc_title(text = "Plano de Carreiras por Nível de Escolaridade")
 
 ```
 

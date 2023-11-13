@@ -144,53 +144,48 @@ dout <- data_to_hierarchical(
 Servidores por Agrupamento
 ===========================================================================
 
-Column 
---------------------------------------------------------------------
-
 ```{r}
 treemap1 <- carreiras |> 
   dplyr::filter(!is.na(Agrupamento)| !is.na(Agrupamento)) |> 
-  group_by(Agrupamento) |> 
+  group_by(Agrupamento, No_faixa) |> 
   summarise(
     qtde_servidores = n()
   ) |> 
   mutate(
     pct = qtde_servidores/sum(qtde_servidores)
   ) 
+
+write.csv2(treemap1, "dados.csv")
 ```
 
-```{r  dpi= 150}
- ggplot(treemap1, aes(x = reorder(Agrupamento, qtde_servidores), y = qtde_servidores)) +
-  geom_bar(stat = "identity", width = 0.5, fill = "#4682b4") +
-  geom_text(
-    aes(
-      label = paste(
-        label_number(scale = 1e0)(qtde_servidores), " - ",
-        scales::percent(pct)
-      )
-    ),
-    size = 3, hjust = -0.1, color = "gray30"
-  ) +
-  scale_y_continuous(
-    breaks = seq(0, 800000, by = 300000),
-    labels = label_number(scale_cut = cut_short_scale()),
-    expand = expansion(mult = c(0.01, 0.01)),
-    limits = c(0, 380000)  
-  ) +
-  scale_fill_manual("#4682b4") +
-  guides(fill = guide_legend(reverse = TRUE)) +
-  labs(title = "Servidores por Agrupamento", y = NULL, x = NULL) +
-  coord_flip() +
-  theme_minimal(base_size = 14) +
-  theme(
-    panel.grid.minor = element_blank(),
-    panel.grid.major = element_blank(),
-    legend.position = "bottom",
-    axis.text.x = element_blank()
-  ) 
+
+Column 
+--------------------------------------------------------------------
+```{r, dpi= 200}
+    knitr::include_graphics("img/Capturar.JPG")
 
 
+```
 
+
+Servidores por Agrupamento2
+===========================================================================
+Row
+--------------------------------------------------------------------
+ 
+```{r}
+p <- ggplot(treemap1, aes(x = No_faixa, y = qtde_servidores, fill = Agrupamento)) +
+  geom_bar(stat = "identity") +
+  # geom_text(aes(label = scales::percent(round(pct,digits = 2)), vjust = -0.5), color = "black", size = 3) +
+  scale_x_discrete() +
+  labs(title = "Distribuição Remuneratória dos Servidores Ativos",
+       x = "",
+       y = "Quantidade de Servidores",
+       fill = "Agrupamento") +
+  coord_flip()+
+  theme_minimal()
+
+plotly::ggplotly(p)
 ```
 
 
